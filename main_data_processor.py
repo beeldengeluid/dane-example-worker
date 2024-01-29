@@ -119,7 +119,26 @@ def apply_model(
 ) -> ThisWorkerOutput:
     logger.info("Starting model application")
 
-    model_application_provenance = None
+    from datetime import datetime
+    import time
+    import os
+    start = datetime.now()
+    with open(os.path.join(cfg.FILE_SYSTEM.OUTPUT_DIR, 'foobar.txt'), 'w') as f:
+        f.write("Hello world")
+    time.sleep(1)
+    end = datetime.now()
+
+    model_application_provenance = Provenance(
+        activity_name="hello world",
+        activity_description="some dummy processing",
+        input_data='',  # TODO: what what
+        start_time_unix=start.timestamp,
+        parameters={},
+        software_version='',
+        output_data={},
+        processing_time_ms=end-start
+    )
+    # TODO: implement some dummy processing, generate hello-world output?
 
     if not model_application_provenance:
         return ThisWorkerOutput(500, "Failed to apply model")
