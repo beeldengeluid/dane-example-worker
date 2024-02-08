@@ -1,11 +1,12 @@
 import logging
 from typing import Tuple, Optional
-
+import time
 from dane.config import cfg
 from dane.s3_util import validate_s3_uri
 from io_util import (
     get_base_output_dir,
     get_output_file_path,
+    get_output_file_name,
     get_s3_output_file_uri,
     generate_output_dirs,
     get_source_id_from_tar,
@@ -65,7 +66,7 @@ def run(input_file_path: str) -> Tuple[CallbackResponse, Optional[Provenance]]:
         if input_file_path.find(".tar.gz") != -1:
             source_id = get_source_id_from_tar(input_file_path)
         else:
-            source_id = input_file_path.split("/")[-1]
+            source_id = input_file_path.split("/")[-2]
 
         model_input = ThisWorkerInput(
             200,
@@ -118,27 +119,28 @@ def apply_model(
     feature_extraction_input: ThisWorkerInput,
 ) -> ThisWorkerOutput:
     logger.info("Starting model application")
-
-    from datetime import datetime
-    import time
-    import os
-    start = datetime.now()
-    with open(os.path.join(cfg.FILE_SYSTEM.OUTPUT_DIR, 'foobar.txt'), 'w') as f:
-        f.write("Hello world")
-    time.sleep(1)
-    end = datetime.now()
+    start = time.time()*1000  # convert to ms
+    with open(feature_extraction_input.input_file_path, 'r') as f:
+        cnt = len(f.readline().split())
+    destination = get_output_file_path(
+            feature_extraction_input.source_id, OutputType.FOOBAR
+            )
+    with open(destination, 'w') as f:
+        for i in range(cnt):
+            f.write("Hello world")
+    time.sleep(3)  # wait 3 seconds
+    end = time.time()*1000  # convert to ms
 
     model_application_provenance = Provenance(
-        activity_name="hello world",
+        activity_name="hello world\n",
         activity_description="some dummy processing",
         input_data='',  # TODO: what what
-        start_time_unix=start.timestamp,
+        start_time_unix=start,
         parameters={},
         software_version='',
         output_data={},
         processing_time_ms=end-start
     )
-    # TODO: implement some dummy processing, generate hello-world output?
 
     if not model_application_provenance:
         return ThisWorkerOutput(500, "Failed to apply model")

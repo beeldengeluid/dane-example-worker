@@ -88,6 +88,8 @@ def get_output_file_name(source_id: str, output_type: OutputType) -> str:
         # TODO: add cases for other output
         case OutputType.PROVENANCE:
             output_file_name = "provenance.json"
+        case OutputType.FOOBAR:
+            output_file_name = "foobar.txt"
     return output_file_name
 
 

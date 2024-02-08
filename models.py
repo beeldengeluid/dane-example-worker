@@ -12,6 +12,7 @@ class CallbackResponse(TypedDict):
 
 # These are the types of output this worker (possibly) provides (depending on config)
 class OutputType(Enum):
+    FOOBAR = "foobar"
     PROVENANCE = "provenance"  # produced by provenance.py
 
 

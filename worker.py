@@ -1,5 +1,6 @@
 import logging
 import sys
+import os
 from base_util import validate_config
 from dane import Document, Task, Result
 from dane.base_classes import base_worker
@@ -18,7 +19,7 @@ import main_data_processor
 logger = logging.getLogger()
 
 
-class WorkerSkeleton(base_worker):
+class ExampleWorker(base_worker):
     def __init__(self, config):
         logger.info(config)
 
@@ -45,10 +46,10 @@ class WorkerSkeleton(base_worker):
         if not self.generator:
             logger.info("Generator was None, creating it now")
             self.generator = {
-                "id": "dane-visual-feature-extraction-worker",
+                "id": "dane-example-worker",
                 "type": "Software",
                 "name": "MY_NAME",
-                "homepage": "https://github.com/beeldengeluid/dane-emotion-recognition-worker",
+                "homepage": "https://github.com/beeldengeluid/dane-example-worker",
             }
 
     """----------------------------------INTERACTION WITH DANE SERVER ---------------------------------"""
@@ -135,7 +136,7 @@ if __name__ == "__main__":
         logger.info("Running feature extraction with INPUT.TEST_INPUT_PATH ")
         if cfg.INPUT.TEST_INPUT_PATH:
             processing_result, full_provenance_chain = main_data_processor.run(
-                cfg.INPUT.TEST_INPUT_PATH
+                os.path.join(cfg.FILE_SYSTEM.BASE_MOUNT, cfg.FILE_SYSTEM.INPUT_DIR, cfg.INPUT.TEST_INPUT_PATH)
             )
             logger.info("Results after applying desired I/O")
             logger.info(processing_result)
