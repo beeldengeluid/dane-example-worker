@@ -1,4 +1,5 @@
 # Important for understanding DANE configs: https://github.com/CLARIAH/DANE/blob/main/DANE/config.py
+# To read more about the configuration: https://github.com/beeldengeluid/dane-example-worker/wiki/Config
 
 # Important note:
 # FIRST the home dir config is applied (~/.DANE/config.yml),
