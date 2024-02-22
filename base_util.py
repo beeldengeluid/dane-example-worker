@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
+    """Check the configuration (supplied by config.yml)
+    Most of the config is related to DANE and do not need to be altered when
+    developing locally, except the last part (settings for this worker specifically).
+    consult https://github.com/beeldengeluid/dane-example-worker/wiki/Config
+    """
     try:
         __validate_environment_variables()
     except AssertionError as e:
@@ -24,7 +29,6 @@ def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
         return False
 
     parent_dirs_to_check: List[str] = []  # parent dirs of file paths must exist
-    # check the DANE.cfg (supplied by config.yml)
     try:
         # rabbitmq settings
         assert config.RABBITMQ, "RABBITMQ"
