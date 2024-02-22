@@ -83,7 +83,8 @@ def get_archive_file_path(source_id: str) -> str:
 
 
 def get_output_file_name(source_id: str, output_type: OutputType) -> str:
-    output_file_name = ""
+    # TODO: specify output file name based on source_id and output_type
+    output_file_name = ""  
     match output_type:
         # TODO: add cases for other output
         case OutputType.PROVENANCE:
