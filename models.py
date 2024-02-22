@@ -19,7 +19,7 @@ class OutputType(Enum):
 @dataclass
 class ThisWorkerInput:
     state: int  # HTTP status code
-    message: str  # error/sucess message
+    message: str  # error/success message
     source_id: str = ""  # <program ID>__<carrier ID>
     input_file_path: str = ""  # where the input was downloaded from
     provenance: Optional[Provenance] = None  # mostly: how long did it take to download
