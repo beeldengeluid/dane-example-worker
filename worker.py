@@ -42,7 +42,7 @@ class ExampleWorker(base_worker):
             no_api=self.UNIT_TESTING,
         )
 
-        # NOTE: cannot be automaticcally filled, because no git client is present
+        # NOTE: cannot be automatically filled, because no git client is present
         if not self.generator:
             logger.info("Generator was None, creating it now")
             self.generator = {
