@@ -8,9 +8,11 @@ LOG_FORMAT = "%(asctime)s|%(levelname)s|%(process)d|%(module)s|%(funcName)s|%(li
 logger = logging.getLogger(__name__)
 
 
-def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
-    """Check the configuration (supplied by config.yml)
-    Important note on how DANE builds up it's config (which is supplied to validate_config):
+def validate_config(config: CfgNode) -> bool:
+    """Check the configuration (supplied by config.yml).
+
+    Return True if config is valid, False otherwise.
+    Important note on how DANE builds up it's config:
     FIRST the home dir config is applied (~/.DANE/config.yml),
     THEN the local base_config.yml will overwrite anything specified
     THEN the local config.yml will overwrite anything specified there.
@@ -115,21 +117,6 @@ def __validate_environment_variables() -> None:
     # self.UNIT_TESTING = os.getenv('DW_ASR_UNIT_TESTING', False)
     try:
         assert True  # TODO add secrets from the config.yml to the env
-    except AssertionError as e:
-        raise (e)
-
-
-def __validate_dane_paths(dane_temp_folder: str, dane_out_folder: str) -> None:
-    i_dir = Path(dane_temp_folder)
-    o_dir = Path(dane_out_folder)
-
-    try:
-        assert os.path.exists(
-            i_dir.parent.absolute()
-        ), f"{i_dir.parent.absolute()} does not exist"
-        assert os.path.exists(
-            o_dir.parent.absolute()
-        ), f"{o_dir.parent.absolute()} does not exist"
     except AssertionError as e:
         raise (e)
 
