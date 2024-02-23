@@ -4,22 +4,19 @@ import os
 from pathlib import Path
 import logging
 
-"""
-Important note on how DANE builds up it's config (which is supplied to validate_config):
-
-    FIRST the home dir config is applied (~/.DANE/config.yml),
-    THEN the local base_config.yml will overwrite anything specified
-    THEN the local config.yml will overwrite anything specified there
-"""
 LOG_FORMAT = "%(asctime)s|%(levelname)s|%(process)d|%(module)s|%(funcName)s|%(lineno)d|%(message)s"
 logger = logging.getLogger(__name__)
 
 
 def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
     """Check the configuration (supplied by config.yml)
-    Most of the config is related to DANE and do not need to be altered when
+    Important note on how DANE builds up it's config (which is supplied to validate_config):
+    FIRST the home dir config is applied (~/.DANE/config.yml),
+    THEN the local base_config.yml will overwrite anything specified
+    THEN the local config.yml will overwrite anything specified there.
+    Also Consult https://github.com/beeldengeluid/dane-example-worker/wiki/Config. 
+    Most of the config listed is related to DANE and do not need to be altered when
     developing locally, except the last part (settings for this worker specifically).
-    consult https://github.com/beeldengeluid/dane-example-worker/wiki/Config
     """
     try:
         __validate_environment_variables()
@@ -28,7 +25,6 @@ def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
         print(str(e))
         return False
 
-    parent_dirs_to_check: List[str] = []  # parent dirs of file paths must exist
     try:
         # rabbitmq settings
         assert config.RABBITMQ, "RABBITMQ"
@@ -107,11 +103,6 @@ def validate_config(config: CfgNode, validate_file_paths: bool = True) -> bool:
             ), "OUTPUT.S3_FOLDER_IN_BUCKET"
 
         assert __check_dane_dependencies(config.DANE_DEPENDENCIES), "DANE_DEPENDENCIES"
-
-        # validate file paths (not while unit testing)
-        if validate_file_paths:
-            __validate_parent_dirs(parent_dirs_to_check)
-            __validate_dane_paths(config.PATHS.TEMP_FOLDER, config.PATHS.OUT_FOLDER)
 
     except AssertionError as e:
         print(f"Configuration error: {str(e)}")
