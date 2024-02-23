@@ -114,7 +114,7 @@ def validate_config(config: CfgNode) -> bool:
 
 
 def __validate_environment_variables() -> None:
-    # self.UNIT_TESTING = os.getenv('DW_ASR_UNIT_TESTING', False)
+    """Assert all env vars are setup as they should."""
     try:
         assert True  # TODO add secrets from the config.yml to the env
     except AssertionError as e:
@@ -122,32 +122,23 @@ def __validate_environment_variables() -> None:
 
 
 def check_setting(setting: Any, t: type, optional=False) -> bool:
-    return (type(setting) is t and optional is False) or (
-        optional and (setting is None or type(setting) is t)
-    )
+    """Check that the setting is of the right type (or None, if optional)"""
+    return (type(setting) is t) or (optional and (setting is None))
 
 
 def __check_dane_dependencies(deps: Any) -> bool:
-    """The idea is that you specify a bit more strictly that your worker can only
+    """Check that all dependencies are in place.
+
+    The idea is that you specify a bit more strictly that your worker can only
     work on the OUTPUT of another worker.
-    If you want to define a dependency, you should populate the deps_allowed list 
+    If you want to define a dependency, you should populate the deps_allowed list
     in this function with valid keys, that other workers use to identify themselves
-    within DANE: just use the queue_name
-    (see e.g. https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L34-L35)
-    Then also make sure you define a valid dependency in your worker here: 
-    https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L36-L38 
+    within DANE: just use the queue_name (see e.g.
+    https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L34-L35)
+    Then also make sure you define a valid dependency in your worker here:
+    https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L36-L38
     (using another worker as an example)
     """
     deps_to_check: list = deps if type(deps) is list else []
     deps_allowed: list = []
     return all(dep in deps_allowed for dep in deps_to_check)
-
-
-def __validate_parent_dirs(paths: list) -> None:
-    try:
-        for p in paths:
-            assert os.path.exists(
-                Path(p).parent.absolute()
-            ), f"Parent dir of file does not exist: {p}"
-    except AssertionError as e:
-        raise (e)
