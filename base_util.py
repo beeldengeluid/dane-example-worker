@@ -150,9 +150,19 @@ def check_setting(setting: Any, t: type, optional=False) -> bool:
 
 
 def __check_dane_dependencies(deps: Any) -> bool:
+    """The idea is that you specify a bit more strictly that your worker can only
+    work on the OUTPUT of another worker.
+    If you want to define a dependency, you should populate the deps_allowed list 
+    in this function with valid keys, that other workers use to identify themselves
+    within DANE: just use the queue_name
+    (see e.g. https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L34-L35)
+    Then also make sure you define a valid dependency in your worker here: 
+    https://github.com/beeldengeluid/dane-video-segmentation-worker/blob/main/worker.py#L36-L38 
+    (using another worker as an example)
+    """
     deps_to_check: list = deps if type(deps) is list else []
-    deps_allowed: list = []  # TODO: add allowed deps for worker
-    return any(dep in deps_allowed for dep in deps_to_check)
+    deps_allowed: list = []
+    return all(dep in deps_allowed for dep in deps_to_check)
 
 
 def __validate_parent_dirs(paths: list) -> None:
