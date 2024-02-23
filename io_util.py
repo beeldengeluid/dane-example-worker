@@ -26,36 +26,32 @@ S3_OUTPUT_TYPES: List[OutputType] = [
 ]  # only upload this output to S3
 
 
-# make sure the necessary base dirs are there
-def validate_data_dirs() -> bool:  # TODO: perhaps add model dir
-    i_dir = Path(get_download_dir())
-    o_dir = Path(get_base_output_dir())
-
-    if not os.path.exists(i_dir.parent.absolute()):
+def validate_data_dirs() -> bool:
+    """Make sure the necessary base dirs are there."""
+    dirs = {
+        "input": Path(get_download_dir()),
+        "output": Path(get_base_output_dir())
+        # TODO: perhaps add model dir
+    }
+    base = dirs['input'].parent.absolute()
+    if not os.path.exists(base):
         logger.info(
-            f"{i_dir.parent.absolute()} does not exist."
+            f"{base} does not exist."
             "Make sure BASE_MOUNT_DIR exists before retrying"
         )
         return False
 
-    # make sure the input and output dirs are there
-    try:
-        os.makedirs(i_dir, 0o755)
-        logger.info("created input dir: {}".format(i_dir))
-    except FileExistsError as e:
-        logger.info(e)
-
-    try:
-        os.makedirs(o_dir, 0o755)
-        logger.info("created output dir: {}".format(o_dir))
-    except FileExistsError as e:
-        logger.info(e)
-
+    for kind, dir in dirs.items():
+        try:
+            os.makedirs(dir, 0o755)
+            logger.info(f"created {kind} dir: {dir}.")
+        except FileExistsError as e:
+            logger.info(e)
     return True
 
 
-# for each OutputType a subdir is created inside the base output dir
 def generate_output_dirs(source_id: str) -> Dict[str, str]:
+    """For each OutputType, create a subdir inside the base output dir"""
     base_output_dir = get_base_output_dir(source_id)
     output_dirs = {}
     for output_type in OutputType:
@@ -66,16 +62,16 @@ def generate_output_dirs(source_id: str) -> Dict[str, str]:
     return output_dirs
 
 
-# below this dir each processing module will put its output data in a subfolder
 def get_base_output_dir(source_id: str = "") -> str:
+    """Return path of which processing modules write output data in a subfolder"""
     path_elements = [cfg.FILE_SYSTEM.BASE_MOUNT, cfg.FILE_SYSTEM.OUTPUT_DIR]
     if source_id:
         path_elements.append(source_id)
     return os.path.join(*path_elements)
 
 
-# output file name of the final tar.gz that will be uploaded to S3
 def get_archive_file_path(source_id: str) -> str:
+    """Return file name of the final tar.gz that will be uploaded to S3"""
     return os.path.join(
         get_base_output_dir(source_id),
         f"{OUTPUT_FILE_BASE_NAME}__{source_id}{TAR_GZ_EXTENSION}",
@@ -83,20 +79,21 @@ def get_archive_file_path(source_id: str) -> str:
 
 
 def get_output_file_name(source_id: str, output_type: OutputType) -> str:
+    """Return file name for specified OutputType"""
     # TODO: specify output file name based on source_id and output_type
-    output_file_name = ""  
     match output_type:
         # TODO: add cases for other output
         case OutputType.PROVENANCE:
             output_file_name = "provenance.json"
         case OutputType.FOOBAR:
-            output_file_name = "foobar.txt"
+            output_file_name = f"{source_id}_foobar.txt"
+        case _:
+            output_file_name = ""
     return output_file_name
 
 
-# output file name of the final .pt file that will be uploaded to S3
-# TODO decide whether to tar.gz this as well
 def get_output_file_path(source_id: str, output_type: OutputType) -> str:
+    """Return file path for specified OutputType"""
     return os.path.join(
         get_base_output_dir(source_id),
         output_type.value,
@@ -104,20 +101,27 @@ def get_output_file_path(source_id: str, output_type: OutputType) -> str:
     )
 
 
-# e.g. s3://<bucket>/assets/<source_id>
 def get_s3_base_uri(source_id: str) -> str:
+    """Return base uri for configured S3 folder.
+
+    e.g. s3://<bucket>/assets/<source_id>"""
     uri = os.path.join(cfg.OUTPUT.S3_BUCKET, cfg.OUTPUT.S3_FOLDER_IN_BUCKET, source_id)
     return f"s3://{uri}"
 
 
-# e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
 def get_s3_output_file_uri(source_id: str) -> str:
+    """Return entire output uri for configured S3 folder.
+
+    e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
+    """
     return f"{get_s3_base_uri(source_id)}/{get_archive_file_path(source_id)}"
 
 
-# NOTE: only use for test run & unit test with input that points to tar file!
-# e.g. ./data/input-files/<basename>__testob.tar.gz
 def get_source_id_from_tar(input_path: str) -> str:
+    """??
+
+    NOTE: only use for test run & unit test with input that points to tar file!
+    e.g. ./data/input-files/<basename>__testob.tar.gz"""
     fn = os.path.basename(input_path)
     tmp = fn.split("__")
     source_id = tmp[1][: -len(TAR_GZ_EXTENSION)]
@@ -125,8 +129,11 @@ def get_source_id_from_tar(input_path: str) -> str:
     return source_id
 
 
-# e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
 def source_id_from_s3_uri(s3_uri: str) -> str:
+    """Return source_id, after parsing entire s3_uri
+
+    e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
+    """
     fn = os.path.basename(
         s3_uri
     )
@@ -136,6 +143,10 @@ def source_id_from_s3_uri(s3_uri: str) -> str:
 
 
 def delete_local_output(source_id: str) -> bool:
+    """Delete anything written to local filesystem
+
+    To be used as cleanup, after archiving and uploading to S3
+    """
     output_dir = get_base_output_dir(source_id)
     logger.info(f"Deleting output folder: {output_dir}")
     if output_dir == os.sep or output_dir == ".":
@@ -157,8 +168,9 @@ def delete_local_output(source_id: str) -> bool:
     return True
 
 
-# TODO implement some more, now checks presence of provenance dir
 def _is_valid_output(output_dir: str) -> bool:
+    """Assrt all relevant output subdirectories exist"""
+    # TODO implement some more, now checks presence of provenance dir
     return os.path.exists(os.path.join(output_dir, OutputType.PROVENANCE.value))
 
 
