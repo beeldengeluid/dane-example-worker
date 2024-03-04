@@ -20,10 +20,11 @@ logger = logging.getLogger(__name__)
 INPUT_GENERATOR_TASK_KEY = "SOME_KEY"
 OUTPUT_FILE_BASE_NAME = "base_name"
 TAR_GZ_EXTENSION = ".tar.gz"
+# specify output types to upload to S3
 S3_OUTPUT_TYPES: List[OutputType] = [
     # TODO: add any output types
     OutputType.PROVENANCE,
-]  # only upload this output to S3
+]
 
 
 def validate_data_dirs() -> bool:
@@ -118,7 +119,7 @@ def get_s3_output_file_uri(source_id: str) -> str:
 
 
 def get_source_id_from_tar(input_path: str) -> str:
-    """??
+    """Parse filename and return source_id.
 
     NOTE: only use for test run & unit test with input that points to tar file!
     e.g. ./data/input-files/<basename>__testob.tar.gz"""
@@ -130,7 +131,7 @@ def get_source_id_from_tar(input_path: str) -> str:
 
 
 def source_id_from_s3_uri(s3_uri: str) -> str:
-    """Return source_id, after parsing entire s3_uri
+    """Parse s3_uri and return source_id.
 
     e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
     """
@@ -143,9 +144,9 @@ def source_id_from_s3_uri(s3_uri: str) -> str:
 
 
 def delete_local_output(source_id: str) -> bool:
-    """Delete anything written to local filesystem
+    """Delete anything written to local filesystem.
 
-    To be used as cleanup, after archiving and uploading to S3
+    To be used as cleanup, after archiving and uploading to S3.
     """
     output_dir = get_base_output_dir(source_id)
     logger.info(f"Deleting output folder: {output_dir}")
@@ -169,12 +170,18 @@ def delete_local_output(source_id: str) -> bool:
 
 
 def _is_valid_output(output_dir: str) -> bool:
-    """Assrt all relevant output subdirectories exist"""
+    """Assert all relevant output subdirectories exist."""
     # TODO implement some more, now checks presence of provenance dir
-    return os.path.exists(os.path.join(output_dir, OutputType.PROVENANCE.value))
+    to_check = [OutputType.PROVENANCE]
+    valid = [
+        os.path.exists(os.path.join(output_dir, outputtype.value))
+        for outputtype in to_check
+        ]
+    return all(valid)
 
 
 def _validate_transfer_config() -> bool:
+    """Assert that all S3 settings for transfer are in place."""
     if any(
         [
             not x
@@ -192,8 +199,8 @@ def _validate_transfer_config() -> bool:
     return True
 
 
-# compresses all desired output dirs into a single tar and uploads it to S3
 def transfer_output(source_id: str) -> bool:
+    """compress all desired output dirs into a single tar and upload it to S3"""
     output_dir = get_base_output_dir(source_id)
     logger.info(f"Transferring {output_dir} to S3 (asset={source_id})")
     if not _validate_transfer_config():
@@ -218,14 +225,18 @@ def transfer_output(source_id: str) -> bool:
 
 
 def get_download_dir() -> str:
+    """Return general location where input should be downloaded in."""
     return os.path.join(cfg.FILE_SYSTEM.BASE_MOUNT, cfg.FILE_SYSTEM.INPUT_DIR)
 
 
 def get_base_input_dir(source_id: str) -> str:
+    """Return location where input should be downloaded in for specified source_id."""
     return os.path.join(get_download_dir(), source_id)
 
 
 def delete_input_file(input_file: str, source_id: str, actually_delete: bool) -> bool:
+    """Delete specified input archive + corresponding file structure, report success"""
+    # TODO: refactor
     logger.info(f"Verifying deletion of input file: {input_file}")
     if actually_delete is False:
         logger.info("Configured to leave the input alone, skipping deletion")
@@ -259,6 +270,7 @@ def delete_input_file(input_file: str, source_id: str, actually_delete: bool) ->
 
 
 def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
+    """Obtain input from s3_uri, report in the form of ThisWorkerInput"""
 
     if not validate_s3_uri(s3_uri):
         return ThisWorkerInput(500, f"Invalid S3 URI: {s3_uri}")
@@ -309,8 +321,9 @@ def fetch_input_s3_uri(handler, doc: Document) -> str:
     return ""
 
 
-# untars somefile.tar.gz into the same dir
 def untar_input_file(tar_file_path: str):
+    """Untar archive (.tar.gz) into the same dir"""
+    # TODO: explicitly report back?
     logger.info(f"Uncompressing {tar_file_path}")
     path = str(Path(tar_file_path).parent)
     with tarfile.open(tar_file_path) as tar:
