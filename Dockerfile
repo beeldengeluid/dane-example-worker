@@ -17,5 +17,6 @@ RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
 COPY . .
 
+RUN chown nonroot: docker-entrypoint.sh
 USER nonroot
 ENTRYPOINT ["./docker-entrypoint.sh"]
