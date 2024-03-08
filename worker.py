@@ -20,7 +20,20 @@ logger = logging.getLogger()
 
 
 class ExampleWorker(base_worker):
+    """ Example worker class
+
+    Dane Example worker class that implements the Dane worker.
+    Thus serves as the process receiving tasks from Dane.
+    Uses the base_worker class from Dane
+    """
     def __init__(self, config):
+        """ Initialises the worker class
+
+        Validates the config, sets some variables and creates a generator if absent.
+
+        Params:
+            config: the configuration          
+        """
         logger.info(config)
 
         if not validate_config(config, not self.UNIT_TESTING):
@@ -54,8 +67,22 @@ class ExampleWorker(base_worker):
 
     """----------------------------------INTERACTION WITH DANE SERVER ---------------------------------"""
 
-    # DANE callback function, called whenever there is a job for this worker
     def callback(self, task: Task, doc: Document) -> CallbackResponse:
+        """ Dane callback function
+
+        DANE callback function is called whenever there is a job for this worker.
+        Fetches input from S3, 
+        Runs the main process,
+        Saves the results and provernance to the dane index.
+
+        Params:
+            task: the Dane Task
+            doc: the Dane Document
+
+        Returns:
+            CallbackResponse: the main processing result
+
+        """
         logger.info("Receiving a task from the DANE server!")
         logger.info(task)
         logger.info(doc)
@@ -87,6 +114,15 @@ class ExampleWorker(base_worker):
         s3_location: str,
         provenance: Provenance,
     ) -> None:
+        """ Save the result to the dane index
+
+        Params:
+            doc: The dane Document
+            task: The dane Task
+            s3_location: The location to save the dane result to
+            provernance: The Provernace information
+
+        """
         logger.info("saving results to DANE, task id={0}".format(task._id))
         # TODO figure out the multiple lines per transcript (refresh my memory)
         r = Result(
@@ -113,7 +149,7 @@ if __name__ == "__main__":
 
     # first read the CLI arguments
     parser = ArgumentParser(description="dane-emotion-recognition-worker")
-    parser.add_argument(
+    parser.add_argument(a
         "--run-test-file", action="store", dest="run_test_file", default="n", nargs="?"
     )
     parser.add_argument("--log", action="store", dest="loglevel", default="INFO")
@@ -154,7 +190,7 @@ if __name__ == "__main__":
     else:
         logger.info("Starting the worker")
         # start the worker
-        w = WorkerSkeleton(cfg)
+        w = ExampleWorker(cfg)
         try:
             w.run()
         except ChannelClosedByBroker:
