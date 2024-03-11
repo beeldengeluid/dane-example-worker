@@ -19,6 +19,6 @@ RUN pip install poetry==1.8.2
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-COPY . .
+COPY . /src
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
