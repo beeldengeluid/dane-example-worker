@@ -1,8 +1,12 @@
-from docker.io/python:3.10
+FROM docker.io/python:3.10
+
+# Create dirs for:
+# - Injecting config.yml: /root/.DANE
+# - Mount point for input & output files: /mnt/dane-fs
+# - Storing the source code: /src
+RUN mkdir /root/.DANE /mnt/dane-fs /src
 
 WORKDIR /src
-
-RUN adduser --system --no-create-home nonroot
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -17,6 +21,4 @@ RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
 COPY . .
 
-RUN chown nonroot: docker-entrypoint.sh
-USER nonroot
 ENTRYPOINT ["./docker-entrypoint.sh"]
