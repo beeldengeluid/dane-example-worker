@@ -1,7 +1,5 @@
-from typing import Any, List
+from typing import Any
 from yacs.config import CfgNode
-import os
-from pathlib import Path
 import logging
 
 LOG_FORMAT = "%(asctime)s|%(levelname)s|%(process)d|%(module)s|%(funcName)s|%(lineno)d|%(message)s"
@@ -16,7 +14,7 @@ def validate_config(config: CfgNode) -> bool:
     FIRST the home dir config is applied (~/.DANE/config.yml),
     THEN the local base_config.yml will overwrite anything specified
     THEN the local config.yml will overwrite anything specified there.
-    Also Consult https://github.com/beeldengeluid/dane-example-worker/wiki/Config. 
+    Also Consult https://github.com/beeldengeluid/dane-example-worker/wiki/Config.
     Most of the config listed is related to DANE and do not need to be altered when
     developing locally, except the last part (settings for this worker specifically).
     """

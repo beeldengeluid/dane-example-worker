@@ -34,11 +34,10 @@ def validate_data_dirs() -> bool:
         "output": Path(get_base_output_dir())
         # TODO: perhaps add model dir
     }
-    base = dirs['input'].parent.absolute()
+    base = dirs["input"].parent.absolute()
     if not os.path.exists(base):
         logger.info(
-            f"{base} does not exist."
-            "Make sure BASE_MOUNT_DIR exists before retrying"
+            f"{base} does not exist." "Make sure BASE_MOUNT_DIR exists before retrying"
         )
         return False
 
@@ -135,9 +134,7 @@ def source_id_from_s3_uri(s3_uri: str) -> str:
 
     e.g. s3://<bucket>/assets/<source_id>/<basename>__<source_id>.tar.gz
     """
-    fn = os.path.basename(
-        s3_uri
-    )
+    fn = os.path.basename(s3_uri)
     fn = fn.replace(".tar.gz", "")
     source_id = "__".join(fn.split("__")[1:])
     return source_id
@@ -176,7 +173,7 @@ def _is_valid_output(output_dir: str) -> bool:
     valid = [
         os.path.exists(os.path.join(output_dir, outputtype.value))
         for outputtype in to_check
-        ]
+    ]
     return all(valid)
 
 
