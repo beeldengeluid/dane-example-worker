@@ -73,7 +73,7 @@ class ExampleWorker(base_worker):
         DANE callback function is called whenever there is a job for this worker.
         Fetches input from S3, 
         Runs the main process,
-        Saves the results and provernance to the dane index.
+        Saves the results and provenance to the dane index.
 
         Params:
             task: the Dane Task
@@ -120,8 +120,7 @@ class ExampleWorker(base_worker):
             doc: The dane Document
             task: The dane Task
             s3_location: The location to save the dane result to
-            provernance: The Provernace information
-
+            provenance: The Provenance information (currently not stored but written to S3)
         """
         logger.info("saving results to DANE, task id={0}".format(task._id))
         # TODO figure out the multiple lines per transcript (refresh my memory)
