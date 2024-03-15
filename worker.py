@@ -20,19 +20,20 @@ logger = logging.getLogger()
 
 
 class ExampleWorker(base_worker):
-    """ Example worker class
+    """Example worker class
 
     Dane Example worker class that implements the Dane worker.
     Thus serves as the process receiving tasks from Dane.
     Uses the base_worker class from Dane
     """
+
     def __init__(self, config):
-        """ Initialises the worker class
+        """Initialises the worker class
 
         Validates the config, sets some variables and creates a generator if absent.
 
         Params:
-            config: the configuration          
+            config: the configuration
         """
         logger.info(config)
 
@@ -68,10 +69,10 @@ class ExampleWorker(base_worker):
     """----------------------------------INTERACTION WITH DANE SERVER ---------------------------------"""
 
     def callback(self, task: Task, doc: Document) -> CallbackResponse:
-        """ Dane callback function
+        """Dane callback function
 
         DANE callback function is called whenever there is a job for this worker.
-        Fetches input from S3, 
+        Fetches input from S3,
         Runs the main process,
         Saves the results and provenance to the dane index.
 
@@ -114,7 +115,7 @@ class ExampleWorker(base_worker):
         s3_location: str,
         provenance: Provenance,
     ) -> None:
-        """ Save the result to the dane index
+        """Save the result to the dane index
 
         Params:
             doc: The dane Document
@@ -148,7 +149,7 @@ if __name__ == "__main__":
 
     # first read the CLI arguments
     parser = ArgumentParser(description="dane-emotion-recognition-worker")
-    parser.add_argument(a
+    parser.add_argument(
         "--run-test-file", action="store", dest="run_test_file", default="n", nargs="?"
     )
     parser.add_argument("--log", action="store", dest="loglevel", default="INFO")
@@ -171,7 +172,11 @@ if __name__ == "__main__":
         logger.info("Running feature extraction with INPUT.TEST_INPUT_PATH ")
         if cfg.INPUT.TEST_INPUT_PATH:
             processing_result, full_provenance_chain = main_data_processor.run(
-                os.path.join(cfg.FILE_SYSTEM.BASE_MOUNT, cfg.FILE_SYSTEM.INPUT_DIR, cfg.INPUT.TEST_INPUT_PATH)
+                os.path.join(
+                    cfg.FILE_SYSTEM.BASE_MOUNT,
+                    cfg.FILE_SYSTEM.INPUT_DIR,
+                    cfg.INPUT.TEST_INPUT_PATH,
+                )
             )
             logger.info("Results after applying desired I/O")
             logger.info(processing_result)
@@ -182,9 +187,7 @@ if __name__ == "__main__":
                 else None
             )
         else:
-            logger.error(
-                "Please configure an input file in INPUT.TEST_INPUT_FILE"
-            )
+            logger.error("Please configure an input file in INPUT.TEST_INPUT_FILE")
             sys.exit()
     else:
         logger.info("Starting the worker")
