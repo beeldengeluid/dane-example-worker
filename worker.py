@@ -154,7 +154,7 @@ if __name__ == "__main__":
     else:
         logger.info("Starting the worker")
         # start the worker
-        w = WorkerSkeleton(cfg)
+        w = ExampleWorker(cfg)
         try:
             w.run()
         except ChannelClosedByBroker:
