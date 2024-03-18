@@ -4,6 +4,7 @@ FROM docker.io/python:3.10
 # - Injecting config.yml: /root/.DANE
 # - Mount point for input & output files: /mnt/dane-fs
 # - Storing the source code: /src
+# - Storing the input file to be used while testing: /src/data
 RUN mkdir /root/.DANE /mnt/dane-fs /src /src/data
 
 WORKDIR /src
