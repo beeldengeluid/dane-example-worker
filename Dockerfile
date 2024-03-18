@@ -4,7 +4,7 @@ FROM docker.io/python:3.10
 # - Injecting config.yml: /root/.DANE
 # - Mount point for input & output files: /mnt/dane-fs
 # - Storing the source code: /src
-RUN mkdir /root/.DANE /mnt/dane-fs /src
+RUN mkdir /root/.DANE /mnt/dane-fs /src /src/data
 
 WORKDIR /src
 
@@ -18,6 +18,9 @@ COPY pyproject.toml poetry.lock ./
 RUN pip install poetry==1.8.2
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+
+# copy the config file to /root/.DANE
+COPY ./config/config.yml /root/.DANE
 
 COPY . /src
 
