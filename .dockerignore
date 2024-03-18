@@ -1,5 +1,7 @@
+/data
 /misc
 /model
+/config
 /tests
 .venv
 .flake8

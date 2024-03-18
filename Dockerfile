@@ -20,9 +20,6 @@ RUN pip install poetry==1.8.2
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-# copy the config file to /root/.DANE
-COPY ./config/config.yml /root/.DANE
-
 COPY . /src
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
