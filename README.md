@@ -11,7 +11,9 @@ docker build . -t dane-example-worker
 ```
 3. Run the Docker image:
 ```
-docker run --mount type=bind,source="$(pwd)"config,target=/root/.DANE --mount type=bind,source="$(pwd)"data,target=/data --rm dane-example-worker --run-test-file
+docker run --mount type=bind,source="$(pwd)"config,target=/root/.DANE \
+    --mount type=bind,source="$(pwd)"data,target=/data \
+    --rm dane-example-worker --run-test-file
 ```
 
 Explanation:
