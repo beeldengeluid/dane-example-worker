@@ -31,7 +31,7 @@ from dane.provenance import (
 
 
 logger = logging.getLogger(__name__)
-DANE_WORKER_ID = "dane-emotion-recognition-worker"
+DANE_WORKER_ID = "dane-example-worker"
 
 
 # triggered by running: python worker.py --run-test-file
