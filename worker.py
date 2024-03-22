@@ -27,7 +27,7 @@ class ExampleWorker(base_worker):
     Uses the base_worker class from Dane
     """
 
-    def __init__(self, config):
+    def __init__(self, config, unit_testing=False):
         """Initialises the worker class
 
         Validates the config, sets some variables and creates a generator if absent.
@@ -36,8 +36,9 @@ class ExampleWorker(base_worker):
             config: the configuration
         """
         logger.info(config)
+        self.UNIT_TESTING = unit_testing
 
-        if not validate_config(config, not self.UNIT_TESTING):
+        if not self.UNIT_TESTING and not validate_config(config):
             logger.error("Invalid config, quitting")
             sys.exit()
 
