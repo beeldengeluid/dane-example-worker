@@ -76,12 +76,6 @@ def validate_config(config: CfgNode) -> bool:
             config.INPUT.S3_ENDPOINT_URL, str, True
         ), "INPUT.S3_ENDPOINT_URL"
         assert check_setting(
-            config.INPUT.MODEL_CHECKPOINT_S3_URI, str, True
-        ), "INPUT.MODEL_CHECKPOINT_S3_URI"
-        assert check_setting(
-            config.INPUT.MODEL_CONFIG_S3_URI, str, True
-        ), "INPUT.MODEL_CONFIG_S3_URI"
-        assert check_setting(
             config.INPUT.DELETE_ON_COMPLETION, bool
         ), "INPUT.DELETE_ON_COMPLETION"
 
@@ -138,5 +132,5 @@ def __check_dane_dependencies(deps: Any) -> bool:
     (using another worker as an example)
     """
     deps_to_check: list = deps if type(deps) is list else []
-    deps_allowed: list = []
+    deps_allowed: list = ["input-generating-worker"]
     return all(dep in deps_allowed for dep in deps_to_check)
