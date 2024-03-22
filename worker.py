@@ -176,7 +176,7 @@ if __name__ == "__main__":
                 cfg.INPUT.TEST_INPUT_PATH,
             )
             logger.info(
-                "Running feature extraction with INPUT.TEST_INPUT_PATH:" f"{input_path}"
+                "Running example worker with INPUT.TEST_INPUT_PATH:" f"{input_path}"
             )
             processing_result, full_provenance_chain = main_data_processor.run(
                 input_path
