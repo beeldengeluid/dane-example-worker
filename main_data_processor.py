@@ -68,6 +68,7 @@ def run(input_file_path: str) -> Tuple[CallbackResponse, Optional[Provenance]]:
     if validate_s3_uri(input_file_path):
         model_input = obtain_input_file(input_file_path)
     else:
+        logger.info("Using local input instead of fetching from S3")
         if input_file_path.find(".tar.gz") != -1:
             source_id = get_source_id_from_tar(input_file_path)
         else:
