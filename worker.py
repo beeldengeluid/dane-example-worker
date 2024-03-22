@@ -169,14 +169,17 @@ if __name__ == "__main__":
 
     # see if the test file must be run
     if args.run_test_file != "n":
-        logger.info("Running feature extraction with INPUT.TEST_INPUT_PATH ")
         if cfg.INPUT.TEST_INPUT_PATH:
+            input_path = os.path.join(
+                cfg.FILE_SYSTEM.BASE_MOUNT,
+                cfg.FILE_SYSTEM.INPUT_DIR,
+                cfg.INPUT.TEST_INPUT_PATH,
+            )
+            logger.info(
+                "Running example worker with INPUT.TEST_INPUT_PATH:" f"{input_path}"
+            )
             processing_result, full_provenance_chain = main_data_processor.run(
-                os.path.join(
-                    cfg.FILE_SYSTEM.BASE_MOUNT,
-                    cfg.FILE_SYSTEM.INPUT_DIR,
-                    cfg.INPUT.TEST_INPUT_PATH,
-                )
+                input_path
             )
             logger.info("Results after applying desired I/O")
             logger.info(processing_result)

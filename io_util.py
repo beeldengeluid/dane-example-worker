@@ -31,7 +31,7 @@ def validate_data_dirs() -> bool:
     """Make sure the necessary base dirs are there."""
     dirs = {
         "input": Path(get_download_dir()),
-        "output": Path(get_base_output_dir())
+        "output": Path(get_base_output_dir()),
         # TODO: perhaps add model dir
     }
     base = dirs["input"].parent.absolute()
