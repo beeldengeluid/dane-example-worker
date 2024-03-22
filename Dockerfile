@@ -20,6 +20,9 @@ RUN pip install poetry==1.8.2
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
+# Write provenance info about software versions to file
+RUN echo "dane-example-worker;https://github.com/beeldengeluid/dane-example-worker/commit/$(git rev-parse HEAD)" >> /software_provenance.txt
+
 COPY . /src
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
