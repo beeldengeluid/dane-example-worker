@@ -4,7 +4,8 @@ FROM docker.io/python:3.10
 # - Injecting config.yml: /root/.DANE
 # - Mount point for input & output files: /mnt/dane-fs
 # - Storing the source code: /src
-RUN mkdir /root/.DANE /mnt/dane-fs /src
+# - Storing the input file to be used while testing: /src/data
+RUN mkdir /root/.DANE /mnt/dane-fs /src /data
 
 WORKDIR /src
 
@@ -18,6 +19,9 @@ COPY pyproject.toml poetry.lock ./
 RUN pip install poetry==1.8.2
 
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+
+# Write provenance info about software versions to file
+RUN echo "dane-example-worker;https://github.com/beeldengeluid/dane-example-worker/commit/$(git rev-parse HEAD)" >> /software_provenance.txt
 
 COPY . /src
 

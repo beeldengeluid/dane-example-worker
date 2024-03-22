@@ -2,7 +2,6 @@
 /misc
 /model
 /config
-/config.yml
 /tests
 .venv
 .flake8

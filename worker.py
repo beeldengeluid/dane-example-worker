@@ -20,7 +20,21 @@ logger = logging.getLogger()
 
 
 class ExampleWorker(base_worker):
+    """Example worker class
+
+    Dane Example worker class that implements the Dane worker.
+    Thus serves as the process receiving tasks from Dane.
+    Uses the base_worker class from Dane
+    """
+
     def __init__(self, config):
+        """Initialises the worker class
+
+        Validates the config, sets some variables and creates a generator if absent.
+
+        Params:
+            config: the configuration
+        """
         logger.info(config)
 
         if not validate_config(config, not self.UNIT_TESTING):
@@ -54,8 +68,22 @@ class ExampleWorker(base_worker):
 
     """----------------------------------INTERACTION WITH DANE SERVER ---------------------------------"""
 
-    # DANE callback function, called whenever there is a job for this worker
     def callback(self, task: Task, doc: Document) -> CallbackResponse:
+        """Dane callback function
+
+        DANE callback function is called whenever there is a job for this worker.
+        Fetches input from S3,
+        Runs the main process,
+        Saves the results and provenance to the dane index.
+
+        Params:
+            task: the Dane Task
+            doc: the Dane Document
+
+        Returns:
+            CallbackResponse: the main processing result
+
+        """
         logger.info("Receiving a task from the DANE server!")
         logger.info(task)
         logger.info(doc)
@@ -87,6 +115,14 @@ class ExampleWorker(base_worker):
         s3_location: str,
         provenance: Provenance,
     ) -> None:
+        """Save the result to the dane index
+
+        Params:
+            doc: The dane Document
+            task: The dane Task
+            s3_location: The location to save the dane result to
+            provenance: The Provenance information (currently not stored but written to S3)
+        """
         logger.info("saving results to DANE, task id={0}".format(task._id))
         # TODO figure out the multiple lines per transcript (refresh my memory)
         r = Result(
@@ -133,10 +169,17 @@ if __name__ == "__main__":
 
     # see if the test file must be run
     if args.run_test_file != "n":
-        logger.info("Running feature extraction with INPUT.TEST_INPUT_PATH ")
         if cfg.INPUT.TEST_INPUT_PATH:
+            input_path = os.path.join(
+                cfg.FILE_SYSTEM.BASE_MOUNT,
+                cfg.FILE_SYSTEM.INPUT_DIR,
+                cfg.INPUT.TEST_INPUT_PATH,
+            )
+            logger.info(
+                "Running example worker with INPUT.TEST_INPUT_PATH:" f"{input_path}"
+            )
             processing_result, full_provenance_chain = main_data_processor.run(
-                os.path.join(cfg.FILE_SYSTEM.BASE_MOUNT, cfg.FILE_SYSTEM.INPUT_DIR, cfg.INPUT.TEST_INPUT_PATH)
+                input_path
             )
             logger.info("Results after applying desired I/O")
             logger.info(processing_result)
@@ -147,9 +190,7 @@ if __name__ == "__main__":
                 else None
             )
         else:
-            logger.error(
-                "Please configure an input file in INPUT.TEST_INPUT_FILE"
-            )
+            logger.error("Please configure an input file in INPUT.TEST_INPUT_FILE")
             sys.exit()
     else:
         logger.info("Starting the worker")
