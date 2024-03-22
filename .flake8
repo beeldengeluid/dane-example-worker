@@ -52,7 +52,5 @@ show-source = True
 
 # count errors and warnings
 statistics = True
-
 exclude = 
     .venv
-    misc

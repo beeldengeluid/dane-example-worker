@@ -6,7 +6,6 @@ from dane.s3_util import validate_s3_uri
 from io_util import (
     get_base_output_dir,
     get_output_file_path,
-    get_output_file_name,
     get_s3_output_file_uri,
     generate_output_dirs,
     get_source_id_from_tar,
@@ -34,8 +33,16 @@ logger = logging.getLogger(__name__)
 DANE_WORKER_ID = "dane-example-worker"
 
 
-# triggered by running: python worker.py --run-test-file
 def run(input_file_path: str) -> Tuple[CallbackResponse, Optional[Provenance]]:
+    """Main function to start the process.
+
+    Triggered by running: python worker.py --run-test-file
+    Params:
+            input_file_path: where to read input from
+    Returns:
+            CallbackResponse: the main processing result
+            Provenance: a Provenance object describing the processing
+    """
     # there must be an input file
     if not input_file_path:
         logger.error("input file empty")
@@ -50,9 +57,7 @@ def run(input_file_path: str) -> Tuple[CallbackResponse, Optional[Provenance]]:
     # TODO: add proper name and description
     top_level_provenance = generate_initial_provenance(
         name="",
-        description=(
-            ""
-        ),
+        description=(""),
         input_data={"input_file_path": input_file_path},
         parameters=dict(cfg.WORKER_SETTINGS),
         software_version=obtain_software_versions(DANE_WORKER_ID),
@@ -119,27 +124,27 @@ def apply_model(
     feature_extraction_input: ThisWorkerInput,
 ) -> ThisWorkerOutput:
     logger.info("Starting model application")
-    start = time.time()*1000  # convert to ms
-    with open(feature_extraction_input.input_file_path, 'r') as f:
+    start = time.time() * 1000  # convert to ms
+    with open(feature_extraction_input.input_file_path, "r") as f:
         cnt = len(f.readline().split())
     destination = get_output_file_path(
-            feature_extraction_input.source_id, OutputType.FOOBAR
-            )
-    with open(destination, 'w') as f:
+        feature_extraction_input.source_id, OutputType.FOOBAR
+    )
+    with open(destination, "w") as f:
         for i in range(cnt):
             f.write("Hello world")
     time.sleep(3)  # wait 3 seconds
-    end = time.time()*1000  # convert to ms
+    end = time.time() * 1000  # convert to ms
 
     model_application_provenance = Provenance(
         activity_name="hello world\n",
         activity_description="some dummy processing",
-        input_data='',  # TODO: what what
+        input_data="",  # TODO: what what
         start_time_unix=start,
         parameters={},
-        software_version='',
+        software_version="",
         output_data={},
-        processing_time_ms=end-start
+        processing_time_ms=end - start,
     )
 
     if not model_application_provenance:
