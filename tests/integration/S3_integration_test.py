@@ -1,24 +1,14 @@
 from moto import mock_aws
 import boto3
 from main_data_processor import run
-from base_util import LOG_FORMAT
-import logging
-import sys
 from dane.config import cfg
 import pytest
 import os
 from io_util import validate_s3_uri, obtain_input_file, generate_output_dirs
 
 
-# Set the following variables to match the config
-
-#endpoint_url = 'http://s3-host'
-#bucket_in = "example-input"
-#bucket_model = "example-model"
-
-#folder = "assets"
 source_id = "resource__carrier"
-example_key = f"assets/prep__{source_id}.tar.gz"
+example_key = f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/prep__{source_id}.tar.gz"
 
 @pytest.fixture(scope="function")
 def aws_credentials():
@@ -42,7 +32,7 @@ def create_and_fill_buckets(aws):
     client = boto3.client("s3")
     for bucket in [cfg.INPUT.S3_BUCKET, cfg.OUTPUT.S3_BUCKET, cfg.INPUT.S3_BUCKET_MODEL]:
         client.create_bucket(Bucket=bucket)
-    client.put_object(Bucket=cfg.INPUT.S3_BUCKET, Key=f"assets/prep__{source_id}.tar.gz")
+    client.put_object(Bucket=cfg.INPUT.S3_BUCKET, Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/prep__{source_id}.tar.gz")
 
 
 @pytest.fixture
@@ -78,4 +68,3 @@ def test_main_data_processor(aws, aws_credentials, create_and_fill_buckets):
     else:
         print("Not configured to transfer output!")
         assert False
-    
