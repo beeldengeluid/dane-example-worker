@@ -32,7 +32,10 @@ def create_and_fill_buckets(aws):
     client = boto3.client("s3")
     for bucket in [cfg.INPUT.S3_BUCKET, cfg.OUTPUT.S3_BUCKET, cfg.INPUT.S3_BUCKET_MODEL]:
         client.create_bucket(Bucket=bucket)
-    client.put_object(Bucket=cfg.INPUT.S3_BUCKET, Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/prep__{source_id}.tar.gz")
+    #assert False
+    client.put_object(Body="tests/integration/resource__carrier.input",
+                      Bucket=cfg.INPUT.S3_BUCKET, 
+                      Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/prep__{source_id}.tar.gz")
 
 
 @pytest.fixture
