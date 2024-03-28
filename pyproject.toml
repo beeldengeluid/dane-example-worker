@@ -8,7 +8,8 @@ authors = ["Sara Veldhoen <sveldhoen@beeldengeluid.nl>"]
 python = "^3.10"
 dane = "^0.4.2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+moto = "^5.0.3"
 pytest = "^7.2.0"
 mockito = "^1.3.3"
 flake8 = "^5.0.4"
@@ -24,6 +25,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 testpaths = [
   "tests/unit",
+  "tests/integration",
 ]
 addopts = [
   "--cov",

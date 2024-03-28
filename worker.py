@@ -27,7 +27,7 @@ class ExampleWorker(base_worker):
     Uses the base_worker class from Dane
     """
 
-    def __init__(self, config):
+    def __init__(self, config, unit_testing=False):
         """Initialises the worker class
 
         Validates the config, sets some variables and creates a generator if absent.
@@ -36,8 +36,9 @@ class ExampleWorker(base_worker):
             config: the configuration
         """
         logger.info(config)
+        self.UNIT_TESTING = unit_testing
 
-        if not validate_config(config, not self.UNIT_TESTING):
+        if not self.UNIT_TESTING and not validate_config(config):
             logger.error("Invalid config, quitting")
             sys.exit()
 
@@ -107,7 +108,6 @@ class ExampleWorker(base_worker):
             )
         return processing_result
 
-    # TODO adapt
     def save_to_dane_index(
         self,
         doc: Document,
@@ -124,7 +124,6 @@ class ExampleWorker(base_worker):
             provenance: The Provenance information (currently not stored but written to S3)
         """
         logger.info("saving results to DANE, task id={0}".format(task._id))
-        # TODO figure out the multiple lines per transcript (refresh my memory)
         r = Result(
             self.generator,
             payload={
