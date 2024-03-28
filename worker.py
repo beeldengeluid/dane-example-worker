@@ -108,7 +108,6 @@ class ExampleWorker(base_worker):
             )
         return processing_result
 
-    # TODO adapt
     def save_to_dane_index(
         self,
         doc: Document,
@@ -125,7 +124,6 @@ class ExampleWorker(base_worker):
             provenance: The Provenance information (currently not stored but written to S3)
         """
         logger.info("saving results to DANE, task id={0}".format(task._id))
-        # TODO figure out the multiple lines per transcript (refresh my memory)
         r = Result(
             self.generator,
             payload={
