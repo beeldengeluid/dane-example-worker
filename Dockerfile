@@ -7,6 +7,8 @@ FROM docker.io/python:3.10
 # - Storing the input file to be used while testing: /src/data
 RUN mkdir /root/.DANE /mnt/dane-fs /src /data
 
+ENV DANE_HOME=/root/.DANE
+
 WORKDIR /src
 
 ENV POETRY_NO_INTERACTION=1 \
