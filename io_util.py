@@ -24,7 +24,7 @@ TAR_GZ_EXTENSION = ".tar.gz"
 S3_OUTPUT_TYPES: List[OutputType] = [
     # TODO: add any output types
     OutputType.PROVENANCE,
-    OutputType.FOOBAR
+    OutputType.FOOBAR,
 ]
 
 
@@ -269,7 +269,7 @@ def delete_input_file(input_file: str, source_id: str, actually_delete: bool) ->
 
 def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
     """Obtain input from s3_uri, report in the form of ThisWorkerInput
-    
+
     NOTE: this function now assumes that the s3_uri is in the form of:
     s3://<bucket>/assets/<basename>__<resource_id>__<asset_id>.tar.gz
     However, if the worker's input is a source video, it will more likely be like:
