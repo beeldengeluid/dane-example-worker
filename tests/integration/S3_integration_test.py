@@ -1,7 +1,8 @@
 from moto import mock_aws
 import boto3
 import pytest
-import os, shutil
+import os
+import shutil
 import tarfile
 
 from main_data_processor import run
@@ -37,19 +38,19 @@ def aws(aws_credentials):
 @pytest.fixture
 def create_sample_input():
     """Add sample input for test to input bucket.
-    In this case, sample input is created on the fly. 
-    It is also possible to download a file here (e.g. from Openbeelden), 
+    In this case, sample input is created on the fly.
+    It is also possible to download a file here (e.g. from Openbeelden),
     or add a file from the repository (e.g. from data/input-files/<example-input>)"""
-    fn = f'{source_id}.input'
-    with open(fn, 'w') as f:
-        f.write('This is just a file with some random input')
-    with tarfile.open(fn_tar_in, 'w:gz') as tar:
+    fn = f"{source_id}.input"
+    with open(fn, "w") as f:
+        f.write("This is just a file with some random input")
+    with tarfile.open(fn_tar_in, "w:gz") as tar:
         tar.add(fn)
     yield
     # after test: cleanup
     os.remove(fn)
     os.remove(fn_tar_in)
-    
+
 
 @pytest.fixture
 def create_and_fill_buckets(aws, create_sample_input):
@@ -58,16 +59,19 @@ def create_and_fill_buckets(aws, create_sample_input):
     for bucket in [
         cfg.INPUT.S3_BUCKET,
         cfg.OUTPUT.S3_BUCKET,
-        cfg.INPUT.S3_BUCKET_MODEL
+        cfg.INPUT.S3_BUCKET_MODEL,
     ]:
         client.create_bucket(Bucket=bucket)
-    client.put_object(Body=fn_tar_in,  # "tests/integration/resource__carrier.input",
-                      Bucket=cfg.INPUT.S3_BUCKET,
-                      Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}")
+    client.put_object(
+        Body=fn_tar_in,  # "tests/integration/resource__carrier.input",
+        Bucket=cfg.INPUT.S3_BUCKET,
+        Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}",
+    )
 
 
 @pytest.fixture
 def setup_fs():
+    """Create test output dir, abort if dir is not empty."""
     try:
         os.makedirs(source_id)
     except FileExistsError:
@@ -84,17 +88,19 @@ def test_main_data_processor(aws, aws_credentials, create_and_fill_buckets, setu
     Relies on fixtures: aws, aws_credentials, create_and_fill_buckets, setup_fs"""
     if cfg.OUTPUT.TRANSFER_ON_COMPLETION:
         # run the main data processor
-        run(input_file_path=f"s3://{cfg.INPUT.S3_BUCKET}/{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}")
-        
+        run(
+            input_file_path=f"s3://{cfg.INPUT.S3_BUCKET}/{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}"
+        )
+
         # Check if the output is present in S3
         client = boto3.client("s3")
         found = False
-        for item in client.list_objects(Bucket=cfg.OUTPUT.S3_BUCKET)['Contents']:
-            found = item['Key'] == key_out
+        for item in client.list_objects(Bucket=cfg.OUTPUT.S3_BUCKET)["Contents"]:
+            found = item["Key"] == key_out
             if found:
                 break
         assert found
-        
+
         # TODO: check that the output matches expectations
         client.download_file(Bucket=cfg.OUTPUT.S3_BUCKET, Key=key_out, Filename=tar_out)
         untar_input_file(tar_out)
