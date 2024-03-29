@@ -24,6 +24,7 @@ TAR_GZ_EXTENSION = ".tar.gz"
 S3_OUTPUT_TYPES: List[OutputType] = [
     # TODO: add any output types
     OutputType.PROVENANCE,
+    OutputType.FOOBAR
 ]
 
 
