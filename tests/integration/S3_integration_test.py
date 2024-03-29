@@ -63,7 +63,7 @@ def create_and_fill_buckets(aws, create_sample_input):
     ]:
         client.create_bucket(Bucket=bucket)
     client.put_object(
-        Body=fn_tar_in,  # "tests/integration/resource__carrier.input",
+        Body=fn_tar_in,
         Bucket=cfg.INPUT.S3_BUCKET,
         Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}",
     )
@@ -79,7 +79,6 @@ def setup_fs():
         assert False
     yield
     # after test: cleanup
-    # os.remove(tar_out)
     shutil.rmtree(source_id)
 
 
