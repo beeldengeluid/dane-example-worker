@@ -1,0 +1,21 @@
+name: main branch - test; deploy (ecr, tst, acc, aws)
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - README.md
+      - LICENSE
+      - docker-compose.yml
+
+jobs:
+  test:
+    uses: ./.github/workflows/_test.yml
+
+  deploy:
+    uses: ./.github/workflows/_deploy.yml
+    secrets: inherit
+    needs: [test]
+    with:
+      target: ghcr
