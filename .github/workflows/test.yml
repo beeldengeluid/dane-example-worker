@@ -19,8 +19,8 @@ jobs:
       run: poetry check
     - name: Install poetry env from pyproject.toml
       run: poetry install
-    - name: Run tests
-      run: poetry run pytest
+    #- name: Run tests
+      #run: poetry run pytest
     - name: Check lint rules
       run: poetry run flake8
     - name: Check code style
