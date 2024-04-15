@@ -24,6 +24,7 @@ TAR_GZ_EXTENSION = ".tar.gz"
 S3_OUTPUT_TYPES: List[OutputType] = [
     # TODO: add any output types
     OutputType.PROVENANCE,
+    OutputType.FOOBAR,
 ]
 
 
@@ -267,7 +268,14 @@ def delete_input_file(input_file: str, source_id: str, actually_delete: bool) ->
 
 
 def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
-    """Obtain input from s3_uri, report in the form of ThisWorkerInput"""
+    """Obtain input from s3_uri, report in the form of ThisWorkerInput
+
+    NOTE: this function now assumes that the s3_uri is in the form of:
+    s3://<bucket>/assets/<basename>__<resource_id>__<asset_id>.tar.gz
+    However, if the worker's input is a source video, it will more likely be like:
+    s3://dane-asset-staging-gb/assets/2101608170158176431__NOS_JOURNAAL_-WON01513227.mp4
+    So TODO: make this more universal/configurable
+    """
 
     if not validate_s3_uri(s3_uri):
         return ThisWorkerInput(500, f"Invalid S3 URI: {s3_uri}")
