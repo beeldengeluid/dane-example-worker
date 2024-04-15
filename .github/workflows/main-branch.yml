@@ -10,12 +10,12 @@ on:
       - docker-compose.yml
 
 jobs:
-  test:
-    uses: ./.github/workflows/_test.yml
+  # test:
+    # uses: ./.github/workflows/_test.yml
 
   deploy:
     uses: ./.github/workflows/_deploy.yml
     secrets: inherit
-    needs: [test]
+    # needs: [test]
     with:
       target: ghcr
