@@ -297,7 +297,7 @@ def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
     if success:
         if input_file_path.find(".tar.gz") != -1:
             # TODO: more elegant solution for hardcoded file name
-            input_file_path = untar_input_file(input_file_path) + f'/{source_id}.input'
+            input_file_path = untar_input_file(input_file_path) + f"/{source_id}.input"
 
         provenance = Provenance(
             activity_name="download",
