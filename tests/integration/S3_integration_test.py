@@ -62,8 +62,9 @@ def create_and_fill_buckets(aws, create_sample_input):
         cfg.INPUT.S3_BUCKET_MODEL,
     ]:
         client.create_bucket(Bucket=bucket)
-    client.put_object(
-        Body=fn_tar_in,
+
+    client.upload_file(
+        Filename=fn_tar_in,
         Bucket=cfg.INPUT.S3_BUCKET,
         Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}",
     )
