@@ -65,7 +65,7 @@ def create_and_fill_buckets(aws, create_sample_input):
     client.put_object(
         Body=fn_tar_in,
         Bucket=cfg.INPUT.S3_BUCKET,
-        Key=f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}",
+        Key=key_in,
     )
 
 
@@ -88,7 +88,7 @@ def test_main_data_processor(aws, aws_credentials, create_and_fill_buckets, setu
     if cfg.OUTPUT.TRANSFER_ON_COMPLETION:
         # run the main data processor
         run(
-            input_file_path=f"s3://{cfg.INPUT.S3_BUCKET}/{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{key_in}"
+            input_file_path=f"s3://{cfg.INPUT.S3_BUCKET}/{key_in}"
         )
 
         # Check if the output is present in S3
