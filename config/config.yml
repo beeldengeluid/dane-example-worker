@@ -25,7 +25,7 @@ ELASTICSEARCH:
     SCHEME: http
     INDEX: dane-index-k8s
 FILE_SYSTEM:
-    BASE_MOUNT: /data # data when running locally
+    BASE_MOUNT: data # /data when running in a container
     INPUT_DIR: input-files
     OUTPUT_DIR: output-files
 INPUT:
