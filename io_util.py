@@ -5,6 +5,8 @@ import shutil
 import tarfile
 from time import time
 from typing import Dict, List
+import requests
+from urllib.parse import urlparse
 
 from dane import Document
 from dane.config import cfg
@@ -267,7 +269,31 @@ def delete_input_file(input_file: str, source_id: str, actually_delete: bool) ->
     return True  # return True even if empty dirs were not removed
 
 
-def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
+def http_download(url: str) -> str:           
+    logger.info(f"Downloading {url}")
+    fn = os.path.basename(urlparse(url).path)
+    # fn = unquote(fn)
+    # fn = doc.target['url'][doc.target['url'].rfind('/') +1:]
+    output_file = os.path.join(get_download_dir(), fn)
+    logger.info(f"Saving to file {fn}")
+
+    # download if the file is not present (preventing unnecessary downloads)
+    if not os.path.exists(output_file):
+        with open(output_file, "wb") as file:
+            response = requests.get(url)
+            file.write(response.content)
+            file.close()
+
+    return ThisWorkerInput(
+        state=200,  # HTTP status code
+        message=f"Downloaded input from {url}",  # error/success message
+        source_id="",  # <program ID>__<carrier ID>
+        input_file_path=output_file,
+        provenance=None
+    )
+
+
+def obtain_input_file_from_s3(s3_uri: str) -> ThisWorkerInput:
     """Obtain input from s3_uri, report in the form of ThisWorkerInput
 
     NOTE: this function now assumes that the s3_uri is in the form of:
@@ -277,8 +303,7 @@ def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
     So TODO: make this more universal/configurable
     """
 
-    if not validate_s3_uri(s3_uri):
-        return ThisWorkerInput(500, f"Invalid S3 URI: {s3_uri}")
+    logger.info(f"Going to obtain input from {s3_uri}")
 
     source_id = source_id_from_s3_uri(s3_uri)
     start_time = time()
