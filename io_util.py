@@ -296,7 +296,6 @@ def obtain_input_file(s3_uri: str) -> ThisWorkerInput:
     success = s3.download_file(bucket, object_name, output_folder)
     if success:
         if input_file_path.find(".tar.gz") != -1:
-            # TODO: more elegant solution for hardcoded file name
             input_file_path = untar_input_file(input_file_path)
 
         provenance = Provenance(
@@ -335,5 +334,4 @@ def untar_input_file(tar_file_path: str):
     path = str(Path(tar_file_path).parent)
     with tarfile.open(tar_file_path) as tar:
         tar.extractall(path=path, filter="data")  # type: ignore
-        filename = tar.getmembers()[0].name
-    return path + f"/{filename}"
+    return path
