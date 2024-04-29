@@ -1,0 +1,47 @@
+# Important for understanding DANE configs: https://github.com/CLARIAH/DANE/blob/main/DANE/config.py
+# To read more about the configuration: https://github.com/beeldengeluid/dane-example-worker/wiki/Config
+
+# Important note:
+# FIRST the home dir config is applied (~/.DANE/config.yml),
+# THEN the base_config.yml will overwrite anything,
+# THEN the local config.yml
+
+# Note: For local testing, copy this file to config.yml (in main dir of this repo)
+# Or export DANE_HOME=./config to point DANE to this file
+
+RABBITMQ:
+    HOST: dane-rabbitmq-api.default.svc.cluster.local
+    PORT: 5672
+    EXCHANGE: DANE-exchange
+    RESPONSE_QUEUE: DANE-response-queue
+    USER: guest # change this for production mode
+    PASSWORD: guest # change this for production mode
+ELASTICSEARCH:
+    HOST:
+        - elasticsearch
+    PORT: 9200
+    USER: '' # change this for production mode
+    PASSWORD: '' # change this for production mode
+    SCHEME: http
+    INDEX: dane-index-k8s
+FILE_SYSTEM:
+    BASE_MOUNT: data # data when running locally, /data when running in container
+    INPUT_DIR: input-files
+    OUTPUT_DIR: output-files
+INPUT:
+    TEST_INPUT_PATH: testsource__testcarrier/inputfile.txt
+    S3_ENDPOINT_URL: https://s3-host
+    S3_BUCKET: example-input
+    S3_FOLDER_IN_BUCKET: assets  # folder within the bucketMODEL: s3://bucket/model
+    S3_BUCKET_MODEL: example-model
+    DELETE_ON_COMPLETION: True
+OUTPUT:
+    DELETE_ON_COMPLETION: True
+    TRANSFER_ON_COMPLETION: True
+    S3_ENDPOINT_URL: https://s3-host
+    S3_BUCKET: bucket-name  # bucket reserved for 1 type of output
+    S3_FOLDER_IN_BUCKET: folder  # folder within the bucket
+WORKER_SETTINGS:
+    SETTING_0: foo
+DANE_DEPENDENCIES:
+    - input-generating-worker

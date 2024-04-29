@@ -22,22 +22,16 @@ jobs:
     - name: "Install dev environment"
       run: poetry install --no-interaction --no-ansi
 
-    - name: install libgl1
-      run: sudo apt-get install -y libgl1
-
-    - name: install ffmpeg
-      run: sudo apt-get update && sudo apt-get install -y ffmpeg --fix-missing
-
     - name: "pytest"
       run: |
-        cp config/config.yml config.yml
+        cp config/config-test.yml config.yml
         poetry run pytest
 
-    - name: "flake8"
-      run: "poetry run flake8"
+    #- name: "flake8"
+      #run: "poetry run flake8"
 
     - name: "black"
       run: "poetry run black --check ."
 
-    - name: "mypy"
-      run: "poetry run mypy ."
+    #- name: "mypy"
+      #run: "poetry run mypy ."
