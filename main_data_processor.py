@@ -129,7 +129,8 @@ def apply_model(
     start = time.time() * 1000  # convert to ms
     file_to_read = os.path.join(
         feature_extraction_input.input_file_path,
-        feature_extraction_input.source_id + '.input')
+        feature_extraction_input.source_id + ".input",
+    )
     with open(file_to_read, "r") as f:
         cnt = len(f.readline().split())
     destination = get_output_file_path(
