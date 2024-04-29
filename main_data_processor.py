@@ -1,6 +1,7 @@
 import logging
 from typing import Tuple, Optional
 import time
+import os
 from dane.config import cfg
 from dane.s3_util import validate_s3_uri
 from io_util import (
@@ -126,7 +127,10 @@ def apply_model(
 ) -> ThisWorkerOutput:
     logger.info("Starting model application")
     start = time.time() * 1000  # convert to ms
-    with open(feature_extraction_input.input_file_path, "r") as f:
+    file_to_read = os.path.join(
+        feature_extraction_input.input_file_path,
+        feature_extraction_input.source_id + '.input')
+    with open(file_to_read, "r") as f:
         cnt = len(f.readline().split())
     destination = get_output_file_path(
         feature_extraction_input.source_id, OutputType.FOOBAR
