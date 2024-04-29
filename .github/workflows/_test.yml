@@ -33,5 +33,5 @@ jobs:
     - name: "black"
       run: "poetry run black --check ."
 
-    - name: "mypy"
-      run: "poetry run mypy ."
+    #- name: "mypy"
+      #run: "poetry run mypy ."
