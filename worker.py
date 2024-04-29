@@ -169,11 +169,14 @@ if __name__ == "__main__":
     # see if the test file must be run
     if args.run_test_file != "n":
         if cfg.INPUT.TEST_INPUT_PATH:
-            input_path = os.path.join(
-                cfg.FILE_SYSTEM.BASE_MOUNT,
-                cfg.FILE_SYSTEM.INPUT_DIR,
-                cfg.INPUT.TEST_INPUT_PATH,
-            )
+            if 'http' not in cfg.INPUT.TEST_INPUT_PATH:
+                input_path = os.path.join(
+                    cfg.FILE_SYSTEM.BASE_MOUNT,
+                    cfg.FILE_SYSTEM.INPUT_DIR,
+                    cfg.INPUT.TEST_INPUT_PATH,
+                )
+            else:
+                input_path = cfg.INPUT.TEST_INPUT_PATH
             logger.info(
                 "Running example worker with INPUT.TEST_INPUT_PATH:" f"{input_path}"
             )
