@@ -10,11 +10,12 @@ from io_util import (
     get_s3_output_file_uri,
     generate_output_dirs,
     get_source_id_from_tar,
-    obtain_input_file,
+    obtain_input_file_from_s3,
     transfer_output,
     delete_local_output,
     delete_input_file,
     validate_data_dirs,
+    http_download
 )
 from models import (
     CallbackResponse,
@@ -67,21 +68,25 @@ def run(input_file_path: str) -> Tuple[CallbackResponse, Optional[Provenance]]:
 
     # S3 URI, local tar.gz or locally extracted tar.gz is allowed
     if validate_s3_uri(input_file_path):
-        model_input = obtain_input_file(input_file_path)
+        model_input = obtain_input_file_from_s3(input_file_path)
     else:
-        logger.info("Using local input instead of fetching from S3")
-        if input_file_path.find(".tar.gz") != -1:
-            source_id = get_source_id_from_tar(input_file_path)
-        else:
-            source_id = input_file_path.split("/")[-2]
+        try:
+            model_input = http_download(input_file_path)
+        except Exception:
+            logger.info(f"Cannot download from {input_file_path}")
+            logger.info("Using local input instead of fetching from S3")
+            if input_file_path.find(".tar.gz") != -1:
+                source_id = get_source_id_from_tar(input_file_path)
+            else:
+                source_id = input_file_path.split("/")[-2]
 
-        model_input = ThisWorkerInput(
-            200,
-            f"Processing tar.gz archive: {input_file_path}",
-            source_id,
-            input_file_path,
-            None,  # no download provenance when using local file
-        )
+            model_input = ThisWorkerInput(
+                200,
+                f"Processing tar.gz archive: {input_file_path}",
+                source_id,
+                input_file_path,
+                None,  # no download provenance when using local file
+            )
 
     # add the download provenance
     if model_input.provenance:
@@ -127,12 +132,9 @@ def apply_model(
 ) -> ThisWorkerOutput:
     logger.info("Starting model application")
     start = time.time() * 1000  # convert to ms
-    file_to_read = os.path.join(
-        feature_extraction_input.input_file_path,
-        feature_extraction_input.source_id + ".input",
-    )
-    with open(file_to_read, "r") as f:
-        cnt = len(f.readline().split())
+    cnt = len(feature_extraction_input.input_file_path)
+    #with open(file_to_read, "r") as f:
+    #    cnt = len(f.readline().split())
     destination = get_output_file_path(
         feature_extraction_input.source_id, OutputType.FOOBAR
     )
