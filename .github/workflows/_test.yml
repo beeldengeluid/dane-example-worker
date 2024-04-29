@@ -24,7 +24,7 @@ jobs:
 
     - name: "pytest"
       run: |
-        cp config/config.yml config.yml
+        cp config/config-test.yml config.yml
         poetry run pytest
 
     #- name: "flake8"
