@@ -334,4 +334,5 @@ def untar_input_file(tar_file_path: str):
     path = str(Path(tar_file_path).parent)
     with tarfile.open(tar_file_path) as tar:
         tar.extractall(path=path, filter="data")  # type: ignore
-    return path
+        filename = tar.getmembers()[0].name
+    return path + f"/{filename}"
