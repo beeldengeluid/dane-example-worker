@@ -25,11 +25,11 @@ ELASTICSEARCH:
     SCHEME: http
     INDEX: dane-index-k8s
 FILE_SYSTEM:
-    BASE_MOUNT: data # /data when running in a container
+    BASE_MOUNT: data # data when running locally, /data when running in container
     INPUT_DIR: input-files
     OUTPUT_DIR: output-files
 INPUT:
-    TEST_INPUT_PATH: testsource__testcarrier/inputfile.txt
+    TEST_INPUT_PATH: testsource__testcarrier/testsource__testcarrier.txt
     S3_ENDPOINT_URL: https://s3-host
     S3_BUCKET: example-input
     S3_FOLDER_IN_BUCKET: assets  # folder within the bucket

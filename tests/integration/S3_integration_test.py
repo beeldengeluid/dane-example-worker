@@ -10,7 +10,7 @@ from dane.config import cfg
 from io_util import untar_input_file, S3_OUTPUT_TYPES
 
 
-source_id = "resource__carrier"
+source_id = "testsource__testcarrier"
 fn_tar_in = f"prep__{source_id}.tar.gz"
 key_in = f"{cfg.INPUT.S3_FOLDER_IN_BUCKET}/{fn_tar_in}"
 tar_out = f"{source_id}/base_name__{source_id}.tar.gz"
@@ -41,7 +41,7 @@ def create_sample_input():
     In this case, sample input is created on the fly.
     It is also possible to download a file here (e.g. from Openbeelden),
     or add a file from the repository (e.g. from data/input-files/<example-input>)"""
-    fn = f"{source_id}.input"
+    fn = f"{source_id}.txt"
     with open(fn, "w") as f:
         f.write("This is just a file with some random input")
     with tarfile.open(fn_tar_in, "w:gz") as tar:
