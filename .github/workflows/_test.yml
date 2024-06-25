@@ -25,7 +25,7 @@ jobs:
     - name: "pytest"
       run: |
         cp config/config-test.yml config.yml
-        poetry run pytest
+        poetry run pytest --log-cli-level 20
 
     #- name: "flake8"
       #run: "poetry run flake8"
